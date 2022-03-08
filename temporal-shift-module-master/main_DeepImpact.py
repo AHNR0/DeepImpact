@@ -1,7 +1,5 @@
-# Code for "TSM: Temporal Shift Module for Efficient Video Understanding"
-# arXiv:1811.08383
-# Ji Lin*, Chuang Gan, Song Han
-# {jilin, songhan}@mit.edu, ganchuang@csail.mit.edu
+# Based on the code "TSM: Temporal Shift Module for Efficient Video Understanding"
+
 
 import os
 import time

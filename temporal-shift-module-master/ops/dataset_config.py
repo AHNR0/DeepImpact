@@ -1,7 +1,4 @@
-# Code for "TSM: Temporal Shift Module for Efficient Video Understanding"
-# arXiv:1811.08383
-# Ji Lin*, Chuang Gan, Song Han
-# {jilin, songhan}@mit.edu, ganchuang@csail.mit.edu
+# Based on the Code for "TSM: Temporal Shift Module for Efficient Video Understanding"
 
 import os
 
@@ -11,8 +8,8 @@ import os
 ROOT_DATASET = "/media/simpl/Data/Dataset/"
 
 # # for testing:
-# # ROOT_DATASET = "/media/simpl/01D706E647CCFC60/2017-02-27-23-00Leicester3-1Liverpool/datasets/"
-# ROOT_DATASET = "/media/simpl/01D706E647CCFC60/2017-03-17-22-30Dortmund1-0Ingolstadt/datasets/"
+# # ROOT_DATASET = ""
+# ROOT_DATASET = ""
 
 def return_ucf101(modality):
     filename_categories = 'UCF101/labels/classInd.txt'
@@ -109,23 +106,6 @@ def return_kinetics(modality):
 def return_header(modality):
     filename_categories = 2
     if modality == 'RGB':
-        # root_data = ROOT_DATASET + 'SoccerHeaderDataset/short_videos'
-        # root_data = ROOT_DATASET + 'SoccerHeaderDataset/videos'
-        # filename_imglist_train = 'SoccerHeaderDataset/labels/train_videofolder.txt'
-        # filename_imglist_val = 'SoccerHeaderDataset/labels/val_videofolder.txt'
-        # filename_imglist_val = 'SoccerHeaderDataset/SoccerHeaderDataset_MixedW&WOlabel_WithfullFrame_Cropped/labels/val_videofolder.txt'
-        # filename_imglist_val = 'SoccerHeaderDataset/SoccerHeaderDataset_MixedW&WOlabel_WithfullFrame_Cropped/labels/test_videofolder.txt'
-
-
-        # root_data = ROOT_DATASET + 'SoccerHeaderDataset/SoccerHeaderDataset_withballLabel_WithfullFrame_Cropped/videos'
-        # filename_imglist_train = 'SoccerHeaderDataset/SoccerHeaderDataset_withballLabel_WithfullFrame_Cropped/labels/train_videofolder.txt'
-        # # filename_imglist_val = 'SoccerHeaderDataset/SoccerHeaderDataset_withballLabel_WithfullFrame_Cropped/labels/val_videofolder.txt'
-        # filename_imglist_val = 'SoccerHeaderDataset/SoccerHeaderDataset_withballLabel_WithfullFrame_Cropped/labels/test_videofolder.txt'
-
-        # root_data = ROOT_DATASET + 'SoccerHeaderDataset/SoccerHeaderDataset_MixedW&WOlabel_WithfullFrame_Cropped/videos'
-        # filename_imglist_train = 'SoccerHeaderDataset/SoccerHeaderDataset_MixedW&WOlabel_WithfullFrame_Cropped/labels/train_videofolder.txt'
-        # filename_imglist_val = 'SoccerHeaderDataset/SoccerHeaderDataset_MixedW&WOlabel_WithfullFrame_Cropped/labels/val_videofolder.txt'
-        # # filename_imglist_val = 'SoccerHeaderDataset/SoccerHeaderDataset_MixedW&WOlabel_WithfullFrame_Cropped/labels/test_videofolder.txt'
         
         # for train:
         root_data = ROOT_DATASET + 'SoccerHeaderDataset/SegLen5/WithCropping/dataset015_kalman/videos'
@@ -135,10 +115,7 @@ def return_header(modality):
 
         filename_imglist_train = 'SoccerHeaderDataset/SegLen5/WithCropping/dataset015_kalman/labels/train_videofolder.txt'
         filename_imglist_val = 'SoccerHeaderDataset/SegLen5/WithCropping/dataset015_kalman/labels/test_videofolder.txt'
-        
-        
-        # filename_imglist_val = 'SoccerHeaderDataset/SoccerHeaderDataset_MixedW&WOlabel_WithfullFrame_Cropped_v2/labels/test_videofolder.txt'
-        
+                
         
         prefix = 'img_{:05d}.jpg'
     else:
