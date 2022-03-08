@@ -9,7 +9,7 @@ import os
 
 
 dataset_path = '/ssd/video/kinetics/images256/'
-label_path = '/ssd/video/kinetics/labels'
+label_path = '/home/simpl/Research/Projects/HeadImpactDetection/TemporalAggregation/sample_dataset/kinetics400'
 
 if __name__ == '__main__':
     with open('kinetics_label_map.txt') as f:
@@ -20,7 +20,7 @@ if __name__ == '__main__':
     for i, category in enumerate(categories):
         dict_categories[category] = i
 
-    print(dict_categories)
+    # print(dict_categories)
 
     files_input = ['kinetics_val.csv', 'kinetics_train.csv']
     files_output = ['val_videofolder.txt', 'train_videofolder.txt']
@@ -32,8 +32,13 @@ if __name__ == '__main__':
         idx_categories = []
         categories_list = []
         for line in lines:
+            # print('**'*30)
+            # print(line)
             line = line.rstrip()
+            # print(line)
             items = line.split(',')
+            # print(items)
+            # print(items[1] + '_' + items[2])
             folders.append(items[1] + '_' + items[2])
             this_catergory = items[0].replace(' ', '_').replace('"', '').replace('(', '').replace(')', '').replace("'", '')
             categories_list.append(this_catergory)
@@ -44,11 +49,17 @@ if __name__ == '__main__':
         assert len(idx_categories) == len(folders)
         missing_folders = []
         output = []
-        for i in range(len(folders)):
+        # for i in range(len(folders)):
+        for i in range(10):
+            print('**'*50)
             curFolder = folders[i]
+            print(i)
+            print(curFolder)
+            print(categories_list[i])
             curIDX = idx_categories[i]
             # counting the number of frames in each video folders
             img_dir = os.path.join(dataset_path, categories_list[i], curFolder)
+            print(img_dir)
             if not os.path.exists(img_dir):
                 missing_folders.append(img_dir)
                 # print(missing_folders)

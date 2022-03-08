@@ -5,8 +5,14 @@
 
 import os
 
-ROOT_DATASET = '/ssd/video/'  # '/data/jilin/'
+# ROOT_DATASET = '/ssd/video/'  # '/data/jilin/'
 
+#for training:
+ROOT_DATASET = "/media/simpl/Data/Dataset/"
+
+# # for testing:
+# # ROOT_DATASET = "/media/simpl/01D706E647CCFC60/2017-02-27-23-00Leicester3-1Liverpool/datasets/"
+# ROOT_DATASET = "/media/simpl/01D706E647CCFC60/2017-03-17-22-30Dortmund1-0Ingolstadt/datasets/"
 
 def return_ucf101(modality):
     filename_categories = 'UCF101/labels/classInd.txt'
@@ -100,11 +106,51 @@ def return_kinetics(modality):
         raise NotImplementedError('no such modality:' + modality)
     return filename_categories, filename_imglist_train, filename_imglist_val, root_data, prefix
 
+def return_header(modality):
+    filename_categories = 2
+    if modality == 'RGB':
+        # root_data = ROOT_DATASET + 'SoccerHeaderDataset/short_videos'
+        # root_data = ROOT_DATASET + 'SoccerHeaderDataset/videos'
+        # filename_imglist_train = 'SoccerHeaderDataset/labels/train_videofolder.txt'
+        # filename_imglist_val = 'SoccerHeaderDataset/labels/val_videofolder.txt'
+        # filename_imglist_val = 'SoccerHeaderDataset/SoccerHeaderDataset_MixedW&WOlabel_WithfullFrame_Cropped/labels/val_videofolder.txt'
+        # filename_imglist_val = 'SoccerHeaderDataset/SoccerHeaderDataset_MixedW&WOlabel_WithfullFrame_Cropped/labels/test_videofolder.txt'
+
+
+        # root_data = ROOT_DATASET + 'SoccerHeaderDataset/SoccerHeaderDataset_withballLabel_WithfullFrame_Cropped/videos'
+        # filename_imglist_train = 'SoccerHeaderDataset/SoccerHeaderDataset_withballLabel_WithfullFrame_Cropped/labels/train_videofolder.txt'
+        # # filename_imglist_val = 'SoccerHeaderDataset/SoccerHeaderDataset_withballLabel_WithfullFrame_Cropped/labels/val_videofolder.txt'
+        # filename_imglist_val = 'SoccerHeaderDataset/SoccerHeaderDataset_withballLabel_WithfullFrame_Cropped/labels/test_videofolder.txt'
+
+        # root_data = ROOT_DATASET + 'SoccerHeaderDataset/SoccerHeaderDataset_MixedW&WOlabel_WithfullFrame_Cropped/videos'
+        # filename_imglist_train = 'SoccerHeaderDataset/SoccerHeaderDataset_MixedW&WOlabel_WithfullFrame_Cropped/labels/train_videofolder.txt'
+        # filename_imglist_val = 'SoccerHeaderDataset/SoccerHeaderDataset_MixedW&WOlabel_WithfullFrame_Cropped/labels/val_videofolder.txt'
+        # # filename_imglist_val = 'SoccerHeaderDataset/SoccerHeaderDataset_MixedW&WOlabel_WithfullFrame_Cropped/labels/test_videofolder.txt'
+        
+        # for train:
+        root_data = ROOT_DATASET + 'SoccerHeaderDataset/SegLen5/WithCropping/dataset015_kalman/videos'
+        # #for test:
+        # # root_data = ROOT_DATASET + 'SegLen1/dataset009/videos'
+        # root_data = ROOT_DATASET + 'dataset012/videos'
+
+        filename_imglist_train = 'SoccerHeaderDataset/SegLen5/WithCropping/dataset015_kalman/labels/train_videofolder.txt'
+        filename_imglist_val = 'SoccerHeaderDataset/SegLen5/WithCropping/dataset015_kalman/labels/test_videofolder.txt'
+        
+        
+        # filename_imglist_val = 'SoccerHeaderDataset/SoccerHeaderDataset_MixedW&WOlabel_WithfullFrame_Cropped_v2/labels/test_videofolder.txt'
+        
+        
+        prefix = 'img_{:05d}.jpg'
+    else:
+        raise NotImplementedError('no such modality:' + modality)
+    return filename_categories, filename_imglist_train, filename_imglist_val, root_data, prefix
+
+
 
 def return_dataset(dataset, modality):
     dict_single = {'jester': return_jester, 'something': return_something, 'somethingv2': return_somethingv2,
                    'ucf101': return_ucf101, 'hmdb51': return_hmdb51,
-                   'kinetics': return_kinetics }
+                   'kinetics': return_kinetics, 'header': return_header}
     if dataset in dict_single:
         file_categories, file_imglist_train, file_imglist_val, root_data, prefix = dict_single[dataset](modality)
     else:

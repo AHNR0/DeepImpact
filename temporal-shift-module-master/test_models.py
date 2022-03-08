@@ -17,6 +17,8 @@ from ops.transforms import *
 from ops import dataset_config
 from torch.nn import functional as F
 
+from ops.utils import AverageMeter, accuracy_sens_prec, AverageMeter_confusion
+
 # options
 parser = argparse.ArgumentParser(description="TSM testing on the full validation set")
 parser.add_argument('dataset', type=str)
@@ -52,22 +54,6 @@ parser.add_argument('--pretrain', type=str, default='imagenet')
 args = parser.parse_args()
 
 
-class AverageMeter(object):
-    """Computes and stores the average and current value"""
-    def __init__(self):
-        self.reset()
-
-    def reset(self):
-        self.val = 0
-        self.avg = 0
-        self.sum = 0
-        self.count = 0
-
-    def update(self, val, n=1):
-        self.val = val
-        self.sum += val * n
-        self.count += n
-        self.avg = self.sum / self.count
 
 
 def accuracy(output, target, topk=(1,)):
@@ -108,7 +94,7 @@ if args.test_list is not None:
 else:
     test_file_list = [None] * len(weights_list)
 
-
+print(test_file_list)
 data_iter_list = []
 net_list = []
 modality_list = []
@@ -258,6 +244,9 @@ max_num = args.max_num if args.max_num > 0 else total_num
 
 top1 = AverageMeter()
 top5 = AverageMeter()
+# sensitivity=AverageMeter()
+# precision=AverageMeter()
+# ConfMatrix=AverageMeter_confusion()
 
 for i, data_label_pairs in enumerate(zip(*data_iter_list)):
     with torch.no_grad():
@@ -277,13 +266,20 @@ for i, data_label_pairs in enumerate(zip(*data_iter_list)):
         for p, g in zip(ensembled_predict, this_label.cpu().numpy()):
             output.append([p[None, ...], g])
         cnt_time = time.time() - proc_start_time
-        prec1, prec5 = accuracy(torch.from_numpy(ensembled_predict), this_label, topk=(1, 5))
+        prec1, prec5 = accuracy(torch.from_numpy(ensembled_predict), this_label, topk=(1, 1))
+        # sens, prec, accu, confMat = accuracy_sens_prec(torch.from_numpy(ensembled_predict), this_label)
+        
         top1.update(prec1.item(), this_label.numel())
         top5.update(prec5.item(), this_label.numel())
-        if i % 20 == 0:
+        # sensitivity.update(sens.item(), this_label.numel())
+        # precision.update(prec.item(),this_label.numel()))
+        # ConfMatrix.update(confMat.cpu().detach().numpy())
+
+        if i % 1 == 0:
             print('video {} done, total {}/{}, average {:.3f} sec/video, '
-                  'moving Prec@1 {:.3f} Prec@5 {:.3f}'.format(i * args.batch_size, i * args.batch_size, total_num,
-                                                              float(cnt_time) / (i+1) / args.batch_size, top1.avg, top5.avg))
+                  'moving Prec@1 {:.3f} Prec@5 {:.3f} Prediction {} label {}'.format(i * args.batch_size, i * args.batch_size, total_num,
+                                                              float(cnt_time) / (i+1) / args.batch_size, top1.avg, top5.avg, prec1, this_label))
+                                                              
 
 video_pred = [np.argmax(x[0]) for x in output]
 video_pred_top5 = [np.argsort(np.mean(x[0], axis=0).reshape(-1))[::-1][:5] for x in output]
@@ -293,29 +289,37 @@ video_labels = [x[1] for x in output]
 
 if args.csv_file is not None:
     print('=> Writing result to csv file: {}'.format(args.csv_file))
-    with open(test_file_list[0].replace('test_videofolder.txt', 'category.txt')) as f:
-        categories = f.readlines()
-    categories = [f.strip() for f in categories]
+    # with open(test_file_list[0].replace('test_videofolder.txt', 'category.txt')) as f:
+    #     categories = f.readlines()
+    # categories = [f.strip() for f in categories]
     with open(test_file_list[0]) as f:
-        vid_names = f.readlines()
-    vid_names = [n.split(' ')[0] for n in vid_names]
+        lines = f.readlines()
+    vid_names = [n.split(' ')[0] for n in lines]
+    testVid_labels = [n.split(' ')[2] for n in lines]
+    categories=['nonheader','header']
     assert len(vid_names) == len(video_pred)
-    if args.dataset != 'somethingv2':  # only output top1
+    if args.dataset == 'header':
         with open(args.csv_file, 'w') as f:
-            for n, pred in zip(vid_names, video_pred):
-                f.write('{};{}\n'.format(n, categories[pred]))
-    else:
-        with open(args.csv_file, 'w') as f:
-            for n, pred5 in zip(vid_names, video_pred_top5):
-                fill = [n]
-                for p in list(pred5):
-                    fill.append(p)
-                f.write('{};{};{};{};{};{}\n'.format(*fill))
+            for n, testvid_label,pred in zip(vid_names, testVid_labels, video_pred):
+                f.write('{}; {} {}\n'.format(n, categories[pred], categories[int(testvid_label)]))
+    
+    # if args.dataset != 'somethingv2':  # only output top1
+    #     with open(args.csv_file, 'w') as f:
+    #         for n, pred in zip(vid_names, video_pred):
+    #             f.write('{};{}\n'.format(n, categories[pred]))
+    # else:
+    #     with open(args.csv_file, 'w') as f:
+    #         for n, pred5 in zip(vid_names, video_pred_top5):
+    #             fill = [n]
+    #             for p in list(pred5):
+    #                 fill.append(p)
+    #             f.write('{};{};{};{};{};{}\n'.format(*fill))
 
 
 cf = confusion_matrix(video_labels, video_pred).astype(float)
 
 np.save('cm.npy', cf)
+print(cf)
 cls_cnt = cf.sum(axis=1)
 cls_hit = np.diag(cf)
 
@@ -327,5 +331,7 @@ print('upper bound: {}'.format(upper))
 print('-----Evaluation is finished------')
 print('Class Accuracy {:.02f}%'.format(np.mean(cls_acc) * 100))
 print('Overall Prec@1 {:.02f}% Prec@5 {:.02f}%'.format(top1.avg, top5.avg))
+# print(test_file_list)
+# print(video_pred)
 
 

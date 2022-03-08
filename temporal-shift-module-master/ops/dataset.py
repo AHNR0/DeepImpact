@@ -95,7 +95,7 @@ class TSNDataSet(data.Dataset):
         # check the frame number is large >3:
         tmp = [x.strip().split(' ') for x in open(self.list_file)]
         if not self.test_mode or self.remove_missing:
-            tmp = [item for item in tmp if int(item[1]) >= 3]
+            tmp = [item for item in tmp if int(item[1]) >= 1]        
         self.video_list = [VideoRecord(item) for item in tmp]
 
         if self.image_tmpl == '{:06d}-{}_{:05d}.jpg':

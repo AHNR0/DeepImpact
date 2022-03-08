@@ -12,7 +12,7 @@ parser.add_argument('--val_list', type=str, default="")
 parser.add_argument('--root_path', type=str, default="")
 # ========================= Model Configs ==========================
 parser.add_argument('--arch', type=str, default="BNInception")
-parser.add_argument('--num_segments', type=int, default=3)
+parser.add_argument('--num_segments', type=int, default=1)
 parser.add_argument('--consensus_type', type=str, default='avg')
 parser.add_argument('--k', type=int, default=3)
 
@@ -45,7 +45,7 @@ parser.add_argument('--clip-gradient', '--gd', default=None, type=float,
 parser.add_argument('--no_partialbn', '--npb', default=False, action="store_true")
 
 # ========================= Monitor Configs ==========================
-parser.add_argument('--print-freq', '-p', default=20, type=int,
+parser.add_argument('--print-freq', '-p', default=500, type=int,
                     metavar='N', help='print frequency (default: 10)')
 parser.add_argument('--eval-freq', '-ef', default=5, type=int,
                     metavar='N', help='evaluation frequency (default: 5)')
